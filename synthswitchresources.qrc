@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>SliderHandle.png</file>
+        <file>SliderGrooveH.png</file>
+        <file>SliderGrooveV.png</file>
+    </qresource>
+</RCC>
