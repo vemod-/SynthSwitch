@@ -134,8 +134,8 @@ void QSynthSwitch::paintEvent(QPaintEvent* /*event*/)
         {
             if (i == value())
             {
-                p.setPen("#82BCFF");
-                p.setBrush(QBrush("#0076FC"));
+                p.setPen(QColor(0x82,0xBC,0xFF));
+                p.setBrush(QBrush(QColor(0,0x76,0xFC)));
             }
             else
             {
