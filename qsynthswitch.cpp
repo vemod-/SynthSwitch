@@ -1,6 +1,7 @@
 #include "qsynthswitch.h"
 #include <QPainter>
 #include "cresourceinitializer.h"
+#include "qdprpixmap.h"
 
 QSynthSwitch::QSynthSwitch(QWidget *parent) :
     QSlider(parent)
@@ -54,13 +55,13 @@ void QSynthSwitch::setOrientation(Qt::Orientation val)
     QSlider::setOrientation(val);
     if (val == Qt::Orientation::Horizontal)
     {
-        backimage=QImage(":/SliderGrooveH.png");
+        backimage = QImage(":/SliderGrooveH.png");
         setInvertedAppearance(false);
         setInvertedControls(true);
     }
     else
     {
-        backimage=QImage(":/SliderGrooveV.png");
+        backimage = QImage(":/SliderGrooveV.png");
         setInvertedAppearance(true);
         setInvertedControls(false);
     }
@@ -69,10 +70,10 @@ void QSynthSwitch::setOrientation(Qt::Orientation val)
 
 void QSynthSwitch::resizeEvent(QResizeEvent* /*event*/)
 {
-    backpix=QPixmap::fromImage(backimage, Qt::AutoColor | Qt::DiffuseDither | Qt::DiffuseAlphaDither).scaled(rect().size(),Qt::KeepAspectRatio,Qt::SmoothTransformation);
-    backRect=backpix.rect();
+    backpix = QDPRPixmap(rect().size(),backimage);
+    backRect = QDPRPixmap::realRect(backpix);
     backRect.moveCenter(rect().center());
-    handlepix=QPixmap::fromImage(handleImage, Qt::AutoColor | Qt::DiffuseDither | Qt::DiffuseAlphaDither).scaled(backpix.size(),Qt::KeepAspectRatio,Qt::SmoothTransformation);
+    handlepix = QDPRPixmap(QDPRPixmap::realSize(backpix),handleImage);
     QRectF grooveRect = backRect;
     QSizeF s = grooveRect.size();
     s.scale(backRect.size()*0.75,Qt::AspectRatioMode::KeepAspectRatio);
@@ -91,9 +92,7 @@ void QSynthSwitch::resizeEvent(QResizeEvent* /*event*/)
 void QSynthSwitch::paintEvent(QPaintEvent* /*event*/)
 {
     QPainter p(this);
-    p.setRenderHint(QPainter::SmoothPixmapTransform);
-    p.setRenderHint(QPainter::Antialiasing);
-    p.setRenderHint(QPainter::TextAntialiasing);
+    p.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing | QPainter::TextAntialiasing);
     backRect.moveCenter(rect().center());
 
     (orientation()==Qt::Orientation::Horizontal) ? backRect.moveBottom(rect().bottom()*0.9) :
@@ -114,7 +113,7 @@ void QSynthSwitch::paintEvent(QPaintEvent* /*event*/)
     }
     double tickRange = halfRange * 2 / maximum();
     double valueCenter = handleCenter -(tickRange*maximum()/2) + (tickRange * value());
-    QRectF handleRect = handlepix.rect();
+    QRectF handleRect = QDPRPixmap::realRect(handlepix);
     if (orientation()==Qt::Orientation::Horizontal)
     {
         handleRect.moveTop(backRect.top());
@@ -186,8 +185,8 @@ void QSynthSwitch::paintEvent(QPaintEvent* /*event*/)
     {
         for (int i = 0; i <= maximum(); i ++)
         {
-            valueCenter = handleCenter -(tickRange*maximum()/2) + (tickRange * i);
-            QRectF c(0,valueCenter-6,backRect.left()-6,10);
+            valueCenter = handleCenter - (tickRange * maximum() / 2) + (tickRange * i);
+            QRectF c(0, valueCenter - 6,backRect.left() -6, 10);
             drawText(p,c,i,Qt::AlignRight);
         }
     }
@@ -195,7 +194,7 @@ void QSynthSwitch::paintEvent(QPaintEvent* /*event*/)
 
 void QSynthSwitch::drawText(QPainter& p, const QRectF& r, const int index, const Qt::Alignment align)
 {
-    QTextOption o=QTextOption(align);
+    QTextOption o = QTextOption(align);
     o.setWrapMode(QTextOption::WrapAnywhere);
     p.setPen(Qt::white);
     p.drawText(r.translated(0,-1),m_StringList[index],o);

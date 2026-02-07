@@ -2,6 +2,7 @@
 PROFILES+=$$_FILE_
 
 INCLUDEPATH += $$PWD
+INCLUDEPATH += $$PWD/../SoftSynths/SoftSynthsWidgets/
 
 SOURCES += $$PWD/qsynthswitch.cpp
 
